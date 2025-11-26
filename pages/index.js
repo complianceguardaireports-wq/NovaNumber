@@ -2,38 +2,63 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
-import { FaWhatsapp, FaTelegram, FaLock, FaBolt, FaCheckCircle } from "react-icons/fa";
+import { FaWhatsapp, FaTelegram, FaLock, FaBolt, FaCheckCircle, FaArrowRight } from "react-icons/fa";
 import { useRouter } from "next/router";
 
 export default function HeroConversion() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [visitorId, setVisitorId] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [savedUser, setSavedUser] = useState(null); // STATE: Stores returning user
   const router = useRouter();
   
   const { register, handleSubmit, formState: { errors } } = useForm();
 
-  // 1. Initialize FingerprintJS on Load (Silent Identity)
+  // 1. Initialize Fingerprint & Check for Returning User
   useEffect(() => {
-    const setFp = async () => {
+    const initSession = async () => {
+      // A. Load Identity
       const fp = await FingerprintJS.load();
       const result = await fp.get();
       setVisitorId(result.visitorId);
+
+      // B. Check Local Memory (Persistence)
+      const existingUser = localStorage.getItem("nova_user");
+      if (existingUser) {
+        setSavedUser(JSON.parse(existingUser));
+      }
     };
-    setFp();
+    initSession();
   }, []);
 
   // 2. Handle Registration (The Conversion Event)
   const onSubmit = async (data) => {
     setIsLoading(true);
-    // In a real app, we would save data.email and data.enableAccelerator here
-    console.log("Creating User & Initializing Revenue Streams:", { ...data, fingerprintId: visitorId });
     
-    // SIMULATE API LATENCY (Psychological delay)
+    // --- DATA RESALE LOGIC: CAPTURE & SAVE ---
+    const userProfile = {
+      email: data.email,
+      fingerprintId: visitorId,
+      acceleratorOptIn: data.enableAccelerator,
+      joinedAt: new Date().toISOString(),
+      status: "active"
+    };
+
+    // Save to Browser Memory (Persistence)
+    localStorage.setItem("nova_user", JSON.stringify(userProfile));
+    
+    console.log("💾 Data Capture Saved:", userProfile);
+
+    // SIMULATE API LATENCY
     await new Promise(resolve => setTimeout(resolve, 1500));
 
-    // SUCCESS: Redirect to Dashboard (CPA Wall)
+    // Redirect to CPA Wall
     router.push("/cpa"); 
+  };
+
+  // Helper: Redirect returning user immediately
+  const handleReturningUser = () => {
+    router.push("/cpa");
   };
 
   return (
@@ -63,12 +88,23 @@ export default function HeroConversion() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 pt-2">
-            <button 
-              onClick={() => setIsModalOpen(true)}
-              className="px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-bold rounded-xl text-lg shadow-lg shadow-emerald-500/20 transition-all transform hover:scale-105 flex items-center justify-center gap-2"
-            >
-              Claim Free Number <FaBolt />
-            </button>
+            {/* SMART BUTTON: Changes based on User State */}
+            {savedUser ? (
+               <button 
+                 onClick={handleReturningUser}
+                 className="px-8 py-4 bg-slate-800 border border-emerald-500/50 hover:bg-slate-700 text-emerald-400 font-bold rounded-xl text-lg shadow-lg transition-all flex items-center justify-center gap-2"
+               >
+                 Welcome Back, Continue <FaArrowRight />
+               </button>
+            ) : (
+               <button 
+                 onClick={() => setIsModalOpen(true)}
+                 className="px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-bold rounded-xl text-lg shadow-lg shadow-emerald-500/20 transition-all transform hover:scale-105 flex items-center justify-center gap-2"
+               >
+                 Claim Free Number <FaBolt />
+               </button>
+            )}
+            
             <div className="flex items-center gap-3 text-slate-400 text-sm px-2 mt-2 sm:mt-0">
               <div className="flex -space-x-2">
                 {[1,2,3].map(i => (
