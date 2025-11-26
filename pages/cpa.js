@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { FaDownload, FaCheckCircle, FaLock, FaShieldAlt, FaClock } from "react-icons/fa";
+import StickyAd from "../components/StickyAd";
 
 export default function CPADashboard() {
   const [verifying, setVerifying] = useState(false);
@@ -17,8 +18,6 @@ export default function CPADashboard() {
 
   const handleTaskClick = () => {
     setVerifying(true);
-    // In a real app, this would poll the CPA network for postback
-    // For demo, we pretend to wait for them to return
     setTimeout(() => {
       alert("Please install the app and open it for 30 seconds to confirm.");
       setVerifying(false);
@@ -26,7 +25,7 @@ export default function CPADashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 font-sans text-slate-100 pb-20">
+    <div className="min-h-screen bg-slate-900 font-sans text-slate-100 pb-24">
       {/* Header */}
       <div className="bg-slate-800 border-b border-slate-700 p-4 flex justify-between items-center sticky top-0 z-10 shadow-lg">
         <div className="font-bold text-xl flex items-center gap-2">
@@ -57,22 +56,19 @@ export default function CPADashboard() {
           </p>
         </div>
 
-        {/* Task List (The Revenue Generator) */}
+        {/* Task List */}
         <div className="space-y-4">
           <div className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-2">Available Tasks (High Speed)</div>
           
-          {/* Offer 1: High Payout */}
+          {/* Offer 1 */}
           <motion.div 
             whileHover={{ scale: 1.02 }}
             className="bg-slate-800 border border-emerald-500/30 rounded-xl p-4 flex items-center justify-between shadow-lg cursor-pointer relative group overflow-hidden"
             onClick={handleTaskClick}
           >
-            {/* Shine Effect */}
             <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-
             <div className="flex items-center gap-4">
               <div className="bg-yellow-500/10 p-3 rounded-lg">
-                 {/* Icon placeholder for Binance */}
                  <FaShieldAlt className="text-yellow-500 text-xl" />
               </div>
               <div>
@@ -88,7 +84,7 @@ export default function CPADashboard() {
             </Link>
           </motion.div>
 
-          {/* Offer 2: Backup */}
+          {/* Offer 2 */}
           <div className="bg-slate-800 border border-slate-700 rounded-xl p-4 flex items-center justify-between opacity-75 hover:opacity-100 transition-opacity">
             <div className="flex items-center gap-4">
               <div className="bg-purple-500/10 p-3 rounded-lg">
@@ -110,12 +106,10 @@ export default function CPADashboard() {
            <div className="flex items-center justify-center gap-2 text-slate-500 text-xs">
              <FaClock /> Verifying installs automatically in 30s
            </div>
-           <p className="text-[10px] text-slate-600">
-             Advertiser ID: 882-190-221 • System Version 2.4.1
-           </p>
+           <p className="text-[10px] text-slate-600">Advertiser ID: 882-190-221</p>
         </div>
 
-        {/* Fake "Checking" Overlay */}
+        {/* Verifying Overlay */}
         {verifying && (
           <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-50">
              <div className="bg-slate-800 p-6 rounded-xl border border-slate-700 text-center shadow-2xl">
@@ -127,6 +121,9 @@ export default function CPADashboard() {
         )}
 
       </div>
+      
+      {/* --- NEW REVENUE STREAM: STICKY AD --- */}
+      <StickyAd />
     </div>
   );
 }
