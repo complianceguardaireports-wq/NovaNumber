@@ -4,12 +4,13 @@ import { useForm } from "react-hook-form";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { FaWhatsapp, FaTelegram, FaLock, FaBolt, FaCheckCircle, FaArrowRight } from "react-icons/fa";
 import { useRouter } from "next/router";
+import { supabase } from "../lib/supabaseClient"; // IMPORT DATABASE CONNECTION
 
 export default function HeroConversion() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [visitorId, setVisitorId] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [savedUser, setSavedUser] = useState(null); // STATE: Stores returning user
+  const [savedUser, setSavedUser] = useState(null);
   const router = useRouter();
   
   const { register, handleSubmit, formState: { errors } } = useForm();
@@ -17,12 +18,10 @@ export default function HeroConversion() {
   // 1. Initialize Fingerprint & Check for Returning User
   useEffect(() => {
     const initSession = async () => {
-      // A. Load Identity
       const fp = await FingerprintJS.load();
       const result = await fp.get();
       setVisitorId(result.visitorId);
 
-      // B. Check Local Memory (Persistence)
       const existingUser = localStorage.getItem("nova_user");
       if (existingUser) {
         setSavedUser(JSON.parse(existingUser));
@@ -31,11 +30,11 @@ export default function HeroConversion() {
     initSession();
   }, []);
 
-  // 2. Handle Registration (The Conversion Event)
+  // 2. Handle Registration (REAL DATA SAVE)
   const onSubmit = async (data) => {
     setIsLoading(true);
     
-    // --- DATA RESALE LOGIC: CAPTURE & SAVE ---
+    // A. Save to Browser (Fast Memory)
     const userProfile = {
       email: data.email,
       fingerprintId: visitorId,
@@ -43,34 +42,41 @@ export default function HeroConversion() {
       joinedAt: new Date().toISOString(),
       status: "active"
     };
-
-    // Save to Browser Memory (Persistence)
     localStorage.setItem("nova_user", JSON.stringify(userProfile));
     
-    console.log("💾 Data Capture Saved:", userProfile);
+    // B. Save to Supabase (Revenue Stream #4: Data Resale)
+    try {
+      const { error } = await supabase
+        .from("users")
+        .insert([
+          { 
+            email: data.email, 
+            fingerprint_id: visitorId,
+            accelerator_opt_in: data.enableAccelerator 
+          }
+        ]);
+        
+      if (error) console.error("Supabase Error:", error);
+      else console.log("✅ Data Secured in Vault");
+      
+    } catch (err) {
+      console.error("Connection Error:", err);
+    }
 
-    // SIMULATE API LATENCY
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    // Redirect to CPA Wall
+    // C. Redirect to Money Page
     router.push("/cpa"); 
   };
 
-  // Helper: Redirect returning user immediately
   const handleReturningUser = () => {
     router.push("/cpa");
   };
 
   return (
     <section className="relative min-h-screen bg-slate-900 overflow-hidden flex items-center justify-center font-sans text-slate-100 selection:bg-emerald-500/30">
-      
-      {/* Background Gradients */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-purple-600/20 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-emerald-500/10 blur-[100px] rounded-full pointer-events-none" />
 
       <div className="container mx-auto px-4 z-10 grid lg:grid-cols-2 gap-12 items-center max-w-6xl">
-        
-        {/* LEFT: Value Proposition */}
         <div className="text-left space-y-8 pt-10 lg:pt-0">
           <div className="inline-flex items-center space-x-2 bg-slate-800/50 border border-slate-700 rounded-full px-4 py-1.5 backdrop-blur-sm">
             <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -88,7 +94,6 @@ export default function HeroConversion() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 pt-2">
-            {/* SMART BUTTON: Changes based on User State */}
             {savedUser ? (
                <button 
                  onClick={handleReturningUser}
@@ -104,7 +109,6 @@ export default function HeroConversion() {
                  Claim Free Number <FaBolt />
                </button>
             )}
-            
             <div className="flex items-center gap-3 text-slate-400 text-sm px-2 mt-2 sm:mt-0">
               <div className="flex -space-x-2">
                 {[1,2,3].map(i => (
@@ -115,7 +119,6 @@ export default function HeroConversion() {
             </div>
           </div>
 
-          {/* Trust Badges */}
           <div className="pt-8 border-t border-slate-800/60 flex gap-6 text-slate-500 grayscale opacity-70 hover:grayscale-0 transition-all">
             <div className="flex items-center gap-2"><FaWhatsapp size={24} /> WhatsApp</div>
             <div className="flex items-center gap-2"><FaTelegram size={24} /> Telegram</div>
@@ -123,7 +126,6 @@ export default function HeroConversion() {
           </div>
         </div>
 
-        {/* RIGHT: Dynamic Visual (Mobile Mockup) */}
         <div className="hidden lg:block relative perspective-1000">
             <motion.div 
               initial={{ rotateY: -10, rotateX: 5 }}
@@ -134,12 +136,10 @@ export default function HeroConversion() {
                 <div className="h-[32px] w-[3px] bg-gray-800 absolute -left-[17px] top-[72px] rounded-l-lg"></div>
                 <div className="h-[46px] w-[3px] bg-gray-800 absolute -left-[17px] top-[124px] rounded-l-lg"></div>
                 <div className="rounded-[2rem] overflow-hidden w-[272px] h-[572px] bg-slate-900 relative flex flex-col">
-                    {/* Top Bar */}
                     <div className="bg-slate-800/80 p-4 backdrop-blur-md flex justify-between items-center border-b border-slate-700">
                        <div className="h-3 w-3 rounded-full bg-red-500"></div>
                        <div className="h-2 w-20 rounded-full bg-slate-700"></div>
                     </div>
-                    {/* Screen Content */}
                     <div className="p-4 pt-8 space-y-4 flex-1 bg-slate-900">
                         <div className="bg-slate-800 p-3 rounded-lg animate-pulse opacity-50">
                             <div className="h-2 bg-slate-700 w-1/3 mb-2 rounded"></div>
@@ -148,8 +148,6 @@ export default function HeroConversion() {
                          <div className="bg-slate-800 p-3 rounded-lg animate-pulse opacity-30">
                             <div className="h-2 bg-slate-700 w-1/2 mb-2 rounded"></div>
                         </div>
-                        
-                        {/* The Notification Pop */}
                         <motion.div 
                           initial={{ y: 50, opacity: 0 }}
                           animate={{ y: 0, opacity: 1 }}
@@ -168,7 +166,6 @@ export default function HeroConversion() {
         </div>
       </div>
 
-      {/* --- CONVERSION MODAL --- */}
       <AnimatePresence>
         {isModalOpen && (
           <motion.div 
@@ -208,7 +205,6 @@ export default function HeroConversion() {
                   {errors.email && <span className="text-red-400 text-xs mt-1">Valid email required for recovery.</span>}
                 </div>
 
-                {/* BRIGHT SDK OPT-IN (REVENUE STREAM #3) */}
                 <div className="bg-slate-900/50 rounded-xl p-3 border border-slate-700/50">
                   <label className="flex items-start gap-3 cursor-pointer">
                     <div className="pt-1">
