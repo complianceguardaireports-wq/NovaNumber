@@ -1,12 +1,36 @@
 ﻿import React, { useState, useEffect } from "react";
-import Link from "next/link";
+import { useRouter } from "next/router";
 import { motion } from "framer-motion";
 import { FaDownload, FaCheckCircle, FaLock, FaShieldAlt, FaClock } from "react-icons/fa";
 import StickyAd from "../components/StickyAd";
 
+// 💰 REVENUE CONFIGURATION 💰
+// Replace these URLs with your REAL Affiliate Links (from CPAGrip, OGAds, etc.)
+const OFFERS = [
+  {
+    id: 1,
+    name: "Binance Pro",
+    subtitle: "Free Install + Reg",
+    payout: "Instant Unlock",
+    link: "https://www.google.com/search?q=binance+signup", // <--- PASTE YOUR REAL LINK HERE
+    icon: "shield",
+    color: "yellow"
+  },
+  {
+    id: 2,
+    name: "Kuda Bank",
+    subtitle: "Install + Open App",
+    payout: "High Speed",
+    link: "https://www.google.com/search?q=kuda+bank", // <--- PASTE YOUR REAL LINK HERE
+    icon: "download",
+    color: "purple"
+  }
+];
+
 export default function CPADashboard() {
   const [verifying, setVerifying] = useState(false);
   const [progress, setProgress] = useState(30);
+  const router = useRouter();
 
   // Simulate a "System Scan" on load
   useEffect(() => {
@@ -16,12 +40,17 @@ export default function CPADashboard() {
     return () => clearInterval(timer);
   }, []);
 
-  const handleTaskClick = () => {
+  const handleTaskClick = (offerLink) => {
+    // 1. Open the Affiliate Link in New Tab (The Money Shot)
+    window.open(offerLink, "_blank");
+
+    // 2. Show "Verifying" on Main Screen
     setVerifying(true);
+
+    // 3. Wait 10 seconds (Psychology), then Redirect to Success
     setTimeout(() => {
-      alert("Please install the app and open it for 30 seconds to confirm.");
-      setVerifying(false);
-    }, 2000);
+      router.push("/success");
+    }, 10000);
   };
 
   return (
@@ -56,49 +85,36 @@ export default function CPADashboard() {
           </p>
         </div>
 
-        {/* Task List */}
+        {/* Dynamic Task List */}
         <div className="space-y-4">
           <div className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-2">Available Tasks (High Speed)</div>
           
-          {/* Offer 1 */}
-          <motion.div 
-            whileHover={{ scale: 1.02 }}
-            className="bg-slate-800 border border-emerald-500/30 rounded-xl p-4 flex items-center justify-between shadow-lg cursor-pointer relative group overflow-hidden"
-            onClick={handleTaskClick}
-          >
-            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-            <div className="flex items-center gap-4">
-              <div className="bg-yellow-500/10 p-3 rounded-lg">
-                 <FaShieldAlt className="text-yellow-500 text-xl" />
-              </div>
-              <div>
-                <div className="font-bold text-white">Binance Pro</div>
-                <div className="text-xs text-emerald-400 flex items-center gap-1">
-                  <span className="bg-emerald-500/10 px-1.5 py-0.5 rounded">Free Install</span>
-                  <span>+ Instant Unlock</span>
+          {OFFERS.map((offer) => (
+            <motion.div 
+              key={offer.id}
+              whileHover={{ scale: 1.02 }}
+              className="bg-slate-800 border border-emerald-500/30 rounded-xl p-4 flex items-center justify-between shadow-lg cursor-pointer relative group overflow-hidden"
+              onClick={() => handleTaskClick(offer.link)}
+            >
+              {/* Shine Effect */}
+              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+
+              <div className="flex items-center gap-4">
+                <div className={`p-3 rounded-lg ${offer.color === "yellow" ? "bg-yellow-500/10" : "bg-purple-500/10"}`}>
+                   {offer.icon === "shield" ? <FaShieldAlt className="text-yellow-500 text-xl" /> : <FaDownload className="text-purple-500 text-xl" />}
+                </div>
+                <div>
+                  <div className="font-bold text-white">{offer.name}</div>
+                  <div className="text-xs text-emerald-400 flex items-center gap-1">
+                    <span className="bg-emerald-500/10 px-1.5 py-0.5 rounded">{offer.subtitle}</span>
+                  </div>
                 </div>
               </div>
-            </div>
-            <Link href="/success" className="bg-emerald-500 hover:bg-emerald-400 text-slate-900 text-sm font-bold px-4 py-2 rounded-lg transition-colors z-10">
-              Unlock
-            </Link>
-          </motion.div>
-
-          {/* Offer 2 */}
-          <div className="bg-slate-800 border border-slate-700 rounded-xl p-4 flex items-center justify-between opacity-75 hover:opacity-100 transition-opacity">
-            <div className="flex items-center gap-4">
-              <div className="bg-purple-500/10 p-3 rounded-lg">
-                 <FaDownload className="text-purple-500 text-xl" />
-              </div>
-              <div>
-                <div className="font-bold text-white">Kuda Bank</div>
-                <div className="text-xs text-slate-400">Install + Open</div>
-              </div>
-            </div>
-            <Link href="/success" className="bg-slate-700 hover:bg-slate-600 text-white text-sm font-bold px-4 py-2 rounded-lg transition-colors">
-              Start
-            </Link>
-          </div>
+              <button className="bg-emerald-500 hover:bg-emerald-400 text-slate-900 text-sm font-bold px-4 py-2 rounded-lg transition-colors z-10">
+                Unlock
+              </button>
+            </motion.div>
+          ))}
         </div>
 
         {/* Footer Trust */}
@@ -112,17 +128,17 @@ export default function CPADashboard() {
         {/* Verifying Overlay */}
         {verifying && (
           <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-50">
-             <div className="bg-slate-800 p-6 rounded-xl border border-slate-700 text-center shadow-2xl">
+             <div className="bg-slate-800 p-6 rounded-xl border border-slate-700 text-center shadow-2xl animate-fade-in">
                 <div className="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                <h3 className="text-white font-bold">Verifying Task...</h3>
-                <p className="text-slate-400 text-xs mt-2">Please keep the app open.</p>
+                <h3 className="text-white font-bold">Checking Completion...</h3>
+                <p className="text-slate-400 text-xs mt-2">Keep the new window open.</p>
+                <p className="text-emerald-500 text-xs mt-4 font-mono">Redirecting in 10s...</p>
              </div>
           </div>
         )}
 
       </div>
       
-      {/* --- NEW REVENUE STREAM: STICKY AD --- */}
       <StickyAd />
     </div>
   );
