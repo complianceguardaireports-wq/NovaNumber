@@ -1,4 +1,5 @@
-import React from "react";
+﻿import React from "react";
+import Link from "next/link";
 import { ArrowRight, Download } from "lucide-react";
 
 export default function CPA() {
@@ -17,12 +18,12 @@ export default function CPA() {
               <div className="text-xs text-green-600">Payout: $2.40</div>
             </div>
           </div>
-          <button 
-            onClick={() => window.location.href = "/success"}
+          <Link 
+            href="/success"
             className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold"
           >
             Install
-          </button>
+          </Link>
         </div>
 
         {/* Mock Offer 2 */}
@@ -34,12 +35,12 @@ export default function CPA() {
               <div className="text-xs text-green-600">Payout: $1.80</div>
             </div>
           </div>
-          <button 
-             onClick={() => window.location.href = "/success"}
+          <Link 
+             href="/success"
              className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold"
           >
             Install
-          </button>
+          </Link>
         </div>
       </div>
 

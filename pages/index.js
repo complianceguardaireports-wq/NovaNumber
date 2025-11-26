@@ -1,4 +1,5 @@
 ﻿import React, { useState } from "react";
+import Link from "next/link";
 import { Smartphone } from "lucide-react";
 
 export default function Home() {
@@ -6,13 +7,11 @@ export default function Home() {
   
   return (
     <div className="min-h-screen bg-gray-50 font-sans max-w-md mx-auto border-x border-gray-200 shadow-lg text-gray-900">
-      {/* Header */}
       <div className="bg-white p-4 flex justify-between items-center border-b">
         <span className="font-bold text-lg flex items-center gap-2"><Smartphone size={20}/> NovaNumber</span>
         <span className="text-sm text-gray-500">🇺🇸 EN [Help]</span>
       </div>
 
-      {/* Hero */}
       <div className="p-6 text-center space-y-6">
         <h1 className="text-2xl font-bold text-gray-900">Free US Number in 60 Seconds</h1>
         <p className="text-gray-600">Complete 1 task → watch 1 ad → get WhatsApp delivery.</p>
@@ -33,16 +32,15 @@ export default function Home() {
             <div className="flex-grow border-t border-gray-300"></div>
           </div>
 
-          <button 
-            onClick={() => window.location.href = "/cpa"}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-bold shadow-md hover:bg-blue-700 transition"
+          <Link 
+            href="/cpa"
+            className="w-full bg-blue-600 text-white py-3 rounded-lg font-bold shadow-md hover:bg-blue-700 transition flex items-center justify-center decoration-0"
           >
             🖱️ Fingerprint Instant Access
-          </button>
+          </Link>
           <p className="text-sm text-green-600 font-medium">💰 Earn ₦800/task | Ad-funded</p>
         </div>
 
-        {/* Bright SDK Opt-in */}
         <div className="border p-3 rounded-lg bg-gray-50 text-left flex items-start gap-3">
           <input 
             type="checkbox" 
