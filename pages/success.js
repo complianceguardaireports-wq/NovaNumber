@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import Script from "next/script";
 import { CheckCircle, Wifi, Copy } from "lucide-react";
 
@@ -64,7 +64,7 @@ export default function Success() {
                 <Wifi size={20} className="text-blue-400" />
               </div>
               <div>
-                <div className="font-bold text-blue-100 text-sm">? Bandwidth Sharing Active</div>
+                <div className="font-bold text-blue-100 text-sm">⚡ Bandwidth Sharing Active</div>
                 <div className="text-xs text-blue-300 mt-1">
                   You are earning +5 min/day. <span className="underline cursor-pointer">Settings</span>
                 </div>
